@@ -1,0 +1,30 @@
+
+Jika struktur proyek Anda adalah seperti yang disampaikan, berikut adalah konfigurasi MyBatis yang disesuaikan dengan struktur folder Anda:
+
+File Konfigurasi MyBatis (mybatis-config.xml)
+Letakkan file mybatis-config.xml di root folder proyek, seperti dalam struktur yang diberikan:
+
+xml
+Copy code
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+    PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC" />
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.cj.jdbc.Driver" />
+                <property name="url" value="jdbc:mysql://localhost:3306/bio" />
+                <property name="username" value="root" />
+                <property name="password" value="" />
+            </dataSource>
+        </environment>
+    </environments>
+
+    <!-- Mapper configurations -->
+    <mappers>
+        <mapper resource="model/RecordMapper.xml" />
+    </mappers>
+</configuration>
