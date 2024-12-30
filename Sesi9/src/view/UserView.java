@@ -21,13 +21,15 @@ public class UserView extends JFrame {
     private JButton btnExport = new JButton("Export");
     private JList<String> userList = new JList<>();
     private DefaultListModel<String> listModel = new DefaultListModel<>();
+    private JProgressBar progressBar = new JProgressBar(0, 100);
+    private JLabel statusLabel = new JLabel("Status: Ready", JLabel.CENTER);
 
     public UserView() {
         setTitle("User Management");
-        setSize(400, 300);
+        setSize(400, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JPanel panel = new JPanel(new GridLayout(5, 1));
+        JPanel panel = new JPanel(new GridLayout(6, 1));
         panel.add(new JLabel("Name:"));
         panel.add(txtName);
         panel.add(new JLabel("Email:"));
@@ -40,8 +42,12 @@ public class UserView extends JFrame {
         panel.add(buttonPanel);
 
         userList.setModel(listModel);
+        progressBar.setStringPainted(true);
+
         add(panel, BorderLayout.NORTH);
         add(new JScrollPane(userList), BorderLayout.CENTER);
+        add(progressBar, BorderLayout.SOUTH);
+        add(statusLabel, BorderLayout.PAGE_END);
     }
 
     public String getNameInput() {
@@ -51,12 +57,24 @@ public class UserView extends JFrame {
     public String getEmailInput() {
         return txtEmail.getText();
     }
+    public int getProgress() {
+    return progressBar.getValue();
+}
+
 
     public void setUserList(String[] users) {
         listModel.clear();
         for (String user : users) {
             listModel.addElement(user);
         }
+    }
+
+    public void setProgress(int value) {
+        progressBar.setValue(value);
+    }
+
+    public void setStatus(String status) {
+        statusLabel.setText(status);
     }
 
     public void addAddUserListener(ActionListener listener) {
@@ -70,5 +88,8 @@ public class UserView extends JFrame {
     public void addExportListener(ActionListener listener) {
         btnExport.addActionListener(listener);
     }
+    public void addToUserList(String user) {
+    listModel.addElement(user);
 }
 
+}

@@ -51,21 +51,76 @@ public class UserController {
     }
 
     class RefreshListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            List<User> users = mapper.getAllUsers();
-            String[] userArray = users.stream()
-                    .map(u -> u.getName() + " (" + u.getEmail() + ")")
-                    .toArray(String[]::new);
-            view.setUserList(userArray);
-        }
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        new SwingWorker<Void, String>() {
+            @Override
+            protected Void doInBackground() {
+                List<User> users = mapper.getAllUsers();
+                view.setStatus("Refreshing data...");
+                view.setProgress(0);
+                int size = users.size();
+
+                int progressIncrement = size > 0 ? 100 / size : 0;
+                int progress = 0;
+
+                for (int i = 0; i < size; i++) {
+                    User user = users.get(i);
+                    try {
+                        Thread.sleep(10); // Simulasi waktu pemrosesan per data
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                    progress += progressIncrement;
+
+                    // Publish data ke GUI
+                    publish(user.getName() + " (" + user.getEmail() + ")");
+
+                    // Pastikan progres tidak lebih dari 100
+                    setProgress(Math.min(progress, 100));
+                }
+
+                // Paksa progres mencapai 100% pada akhir
+                setProgress(100);
+                return null;
+            }
+
+            @Override
+            protected void process(List<String> chunks) {
+                for (String user : chunks) {
+                    view.addToUserList(user); // Tambahkan data ke daftar tampilan
+                }
+                view.setProgress(getProgress());
+            }
+
+            @Override
+            protected void done() {
+                view.setStatus("Refresh complete!");
+                view.setProgress(100); // Pastikan GUI menampilkan 100% di akhir
+            }
+        }.execute();
     }
+}
+
 
     class ExportListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            List<User> users = mapper.getAllUsers();
-            pdf.exportPdf(users);
+            new SwingWorker<Void, Void>() {
+                @Override
+                protected Void doInBackground() {
+                    view.setStatus("Exporting to PDF...");
+                    List<User> users = mapper.getAllUsers();
+                    pdf.exportPdf(users);
+                    return null;
+                }
+
+                @Override
+                protected void done() {
+                    view.setStatus("Export complete!");
+                }
+            }.execute();
         }
     }
 }
+
